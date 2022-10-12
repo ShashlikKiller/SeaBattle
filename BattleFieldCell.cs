@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Input;
 
 namespace SeaBattle
 {
@@ -19,38 +13,35 @@ namespace SeaBattle
         /// Доступна ли эта клетка для изменения(нажатия)? (Да/Нет)
         /// </summary>
         private bool stillalive;
-        /// <summary>
-        /// Координата по оси Х(строка/row)
-        /// </summary> 
-        private int x;
-        /// <summary>
-        /// Координата по оси Y(столбец/column)
-        /// </summary>
-        private int y;
+        private string color; // цвет
+        private bool isenabledCell; // работоспособность кнопки
+        private string buttoncontent; // содержимое кнопки
 
         //// getters and setters
-        public int Y
+        public int Y { get; set; }
+        public int X { get; set; }
+        public string Color
         {
-            get { return y; }
-            set
-            {
-                y = value;
-                OnPropertyChanged("Y");
-            }
+            get => this.stillalive ? "Black" : "Red";// (condition) ? if true : else
+            set => color = value;
         }
-        public int X
+        public bool IsEnabledCell
         {
-            get { return x; }
-            set
+            get => this.stillalive ? true : false;
+            set => isenabledCell = value;
+        }
+        public string ButtonContent
+        {
+            get
             {
-                x = value;
-                OnPropertyChanged("X");
+                return this.shiplocation == true && this.stillalive == false ? (buttoncontent = "There are a ship!") : (buttoncontent = "");
             }
+            set { buttoncontent = value; OnPropertyChanged("ButtonContent"); }
         }
         public bool ShipLocation
         {
-            get { return shiplocation; }
-            set 
+            get => shiplocation;
+            set
             {
                 shiplocation = value;
                 OnPropertyChanged("ShipLocation");
@@ -58,32 +49,30 @@ namespace SeaBattle
         }
         public bool StillAlive
         {
-            get { return this.stillalive; }
+            get => stillalive;
             set
             {
-                this.stillalive = value;
+                stillalive = value;
+                OnPropertyChanged("IsEnabledCell");
                 OnPropertyChanged("Color");
-                OnPropertyChanged("IsEnabled");
-                OnPropertyChanged("StillAlive");
+                OnPropertyChanged("ButtonContent");
             }
         }
-
-        public string Color
+        public void KillThisCell()
+        {
+            this.StillAlive = false;
+        }
+        private Command pickCell;
+        public Command PickCell
         {
             get
             {
-                return this.stillalive ? "Black" : "Red";
-                // (condition) ? if true : else
+                return pickCell ?? (pickCell = new Command(obj =>
+                {
+                        KillThisCell();
+                }));
             }
         }
-        public bool IsEnabled
-        {
-            get
-            {
-                return this.stillalive ? true : false;
-            }
-        }
-
         /// <summary>
         /// Конструктор отдельной клетки поля
         /// </summary>
@@ -91,14 +80,12 @@ namespace SeaBattle
         {
             this.shiplocation = shiplocation;
             this.stillalive = stillalive;
-            this.x = x;
-            this.y = y;
+            this.X = x;
+            this.Y = y;
         }
 
         public event PropertyChangedEventHandler PropertyChanged; //Событие, которое будет вызвано при изменении модели
-
-        //Метод, который скажет ViewModel, что нужно передать виду новые данные
-        public void OnPropertyChanged([CallerMemberName] string prop = "")
+        public void OnPropertyChanged([CallerMemberName] string prop = "") //Метод, который скажет ViewModel, что нужно передать виду новые данные
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }

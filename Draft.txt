@@ -1,0 +1,48 @@
+﻿Лабораторная работа 2, вариант 8: морской бой
+
+Задание:
+     Создать прототип приложения «Морской бой».
+     Пользователь выбирает размер поля.
+     Создается поле из кнопок.
+     Приложение «прячет» корабли.
+     Пользователь ищет, где эти корабли находятся.
+     Приложение считает количество ходов и меняет цвет, и блокирует уже открытые клетки.
+
+Это черновик со всеми ненужными на данный момент разработки приложения функциями.
+Они могут быть добавлены по желанию/просьбе руководителей проекта.
+
+Если надо будет сделать взаимодействие с battlefieldsize:
+
+1. Добавить в appvm:
+        private int battlefieldsize;
+        public int BattleFieldSize { get { return battlefieldsize; } set { battlefieldsize = value; } }
+        private int battlefieldsize;
+2. Добавить в mainwindow:
+        appvm.BattleFieldSize = Convert.ToInt32(text);
+
+(battlefieldsize из-за своей ненужности был заменен на привязку try.parse(from textbox) к команде старта игры)
+
+Если надо будет вручную вводить количество кораблей на поле:
+
+1. Добавить в mainwindow:
+            //StartGameInterface.Add(TextBoxAmountOfShips);
+
+            private void TextBoxAmountOfShips_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (TextBoxAmountOfShips.Text != "")
+            {
+                text = Convert.ToInt32(TextBoxAmountOfShips.Text);
+                if (text <= appvm.BattleFieldSize * appvm.BattleFieldSize)
+                {
+                    appvm.AmountOfShips = Convert.ToInt32(text); // aof - количество кораблей на поле
+                }
+                else
+                {
+                    MessageBox.Show("Введите количество кораблей на поле от 0 до количества ячеек на поле. Число больше не принимается.");
+                    TextBoxAmountOfShips.Text = "1";
+                }
+            }
+        }
+(Проверка на вместимость такого количества кораблей на поле)
+2. Добавить в xaml:
+ <!--<TextBox Name ="TextBoxAmountOfShips" Text="" HorizontalAlignment="Left" Height="47" Margin="244,66,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="88" KeyDown="TextBox_KeyDown" TextChanged="TextBoxAmountOfShips_TextChanged"/>-->
